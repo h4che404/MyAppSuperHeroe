@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import com.juancruz.superheroapp.databinding.ActivityMainSuperHeroBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,13 +45,17 @@ class MainSuperHeroActivity : AppCompatActivity() {
     }
 
     private fun searchByName(query: String) {
+        binding.progressBar.isVisible = true
         CoroutineScope(Dispatchers.IO).launch {
-            val myResponse: Response<SuperHeroDataResponse> = retrofit.create(ApiService::class.java).getSuperheroes(query)
+            val myResponse: Response<SuperHeroDataResponse> =
+                retrofit.create(ApiService::class.java).getSuperheroes(query)
             if(myResponse.isSuccessful){
-                Log.i("aristidevs", "funciona :)")
                 val response: SuperHeroDataResponse? = myResponse.body()
-                if(response != null){
+                if (response != null) {
                     Log.i("Juan", response.toString())
+                    runOnUiThread {
+                        binding.progressBar.isVisible = false
+                    }
                 }
             }
         }
